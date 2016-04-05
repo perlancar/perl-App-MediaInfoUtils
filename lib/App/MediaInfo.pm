@@ -1,4 +1,4 @@
-package App::Media::Info;
+package App::MediaInfo;
 
 # DATE
 # VERSION
