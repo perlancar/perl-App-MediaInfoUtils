@@ -90,8 +90,8 @@ $SPEC{media_is_portrait} = {
     summary => 'Return exit code 0 if media is portrait',
     description => <<'_',
 
-Portrait is defined as having 'rotate' metadata of 90 or 270. Otherwise, media
-is assumed to be 'landscape'.
+Portrait is defined as having 'rotate' metadata of 90 or 270 when the width >
+height. Otherwise, media is assumed to be 'landscape'.
 
 _
     args => {
@@ -106,7 +106,10 @@ sub media_is_portrait {
     return $res unless $res->[0] == 200;
 
     my $rotate = $res->[2]{rotate} // 0;
-    my $is_portrait = ($rotate == 90 || $rotate == 270) ? 1:0;
+    my $width  = $res->[2]{video_width}  // $res->[2]{width};
+    my $height = $res->[2]{video_height} // $res->[2]{height};
+    return [412, "Can't determine video width x height"] unless $width && $height;
+    my $is_portrait = ($rotate == 90 || $rotate == 270 ? 1:0) ^ ($width <= $height ? 1:0) ? 1:0;
 
     [200, "OK", $is_portrait, {'cmdline.exit_code' => $is_portrait ? 0:1, 'cmdline.result' => ''}];
 }
@@ -132,7 +135,10 @@ sub media_is_landscape {
     return $res unless $res->[0] == 200;
 
     my $rotate = $res->[2]{rotate} // 0;
-    my $is_landscape = ($rotate == 90 || $rotate == 270) ? 0:1;
+    my $width  = $res->[2]{video_width}  // $res->[2]{width};
+    my $height = $res->[2]{video_height} // $res->[2]{height};
+    return [412, "Can't determine video width x height"] unless $width && $height;
+    my $is_landscape = ($rotate == 90 || $rotate == 270 ? 1:0) ^ ($width <= $height ? 1:0) ? 0:1;
 
     [200, "OK", $is_landscape, {'cmdline.exit_code' => $is_landscape ? 0:1, 'cmdline.result' => ''}];
 }
@@ -158,7 +164,10 @@ sub media_orientation {
     return $res unless $res->[0] == 200;
 
     my $rotate = $res->[2]{rotate} // 0;
-    my $orientation = ($rotate == 90 || $rotate == 270) ? "portrait" : "landscape";
+    my $width  = $res->[2]{video_width}  // $res->[2]{width};
+    my $height = $res->[2]{video_height} // $res->[2]{height};
+    return [412, "Can't determine video width x height"] unless $width && $height;
+    my $orientation = ($rotate == 90 || $rotate == 270 ? 1:0) ^ ($width <= $height ? 1:0) ? "portrait" : "landscape";
 
     [200, "OK", $orientation];
 }
