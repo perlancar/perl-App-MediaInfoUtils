@@ -10,31 +10,50 @@ use warnings;
 
 our %SPEC;
 
+our %arg0_media_multiple = (
+    media => {
+        summary => 'Media files/URLs',
+        schema => ['array*' => of => 'str*'],
+        req => 1,
+        pos => 0,
+        greedy => 1,
+        #'x.schema.entity' => 'filename_or_url',
+        'x.schema.entity' => 'filename', # temp
+    },
+);
+
+our %arg0_media_single = (
+    media => {
+        summary => 'Media file/URL',
+        schema => ['str*'],
+        req => 1,
+        pos => 0,
+        #'x.schema.entity' => 'filename_or_url',
+        'x.schema.entity' => 'filename', # temp
+    },
+);
+
+our %argopt_backend = (
+    backend => {
+        summary => 'Choose a specific backend',
+        schema  => ['str*', match => '\A\w+\z'],
+        completion => sub {
+            require Complete::Module;
+            my %args = @_;
+            Complete::Module::complete_module(
+                word => $args{word},
+                ns_prefix => "Media::Info",
+            );
+        },
+    },
+);
+
 $SPEC{media_info} = {
     v => 1.1,
     summary => 'Get information about media files/URLs',
     args => {
-        media => {
-            summary => 'Media files/URLs',
-            schema => ['array*' => of => 'str*'],
-            req => 1,
-            pos => 0,
-            greedy => 1,
-            #'x.schema.entity' => 'filename_or_url',
-            'x.schema.entity' => 'filename', # temp
-        },
-        backend => {
-            summary => 'Choose a specific backend',
-            schema  => ['str*', match => '\A\w+\z'],
-            completion => sub {
-                require Complete::Module;
-                my %args = @_;
-                Complete::Module::complete_module(
-                    word => $args{word},
-                    ns_prefix => "Media::Info",
-                );
-            },
-        },
+        %arg0_media_multiple,
+        %argopt_backend,
     },
 };
 sub media_info {
@@ -64,6 +83,84 @@ sub media_info {
         }
         [200, "OK", \@res];
     }
+}
+
+$SPEC{media_is_portrait} = {
+    v => 1.1,
+    summary => 'Return exit code 0 if media is portrait',
+    description => <<'_',
+
+Portrait is defined as having 'rotate' metadata of 90 or 270. Otherwise, media
+is assumed to be 'landscape'.
+
+_
+    args => {
+        %arg0_media_single,
+        %argopt_backend,
+    },
+};
+sub media_is_portrait {
+    my %args = @_;
+
+    my $res = media_info(media => [$args{media}], backend=>$args{backend});
+    return $res unless $res->[0] == 200;
+
+    my $rotate = $res->[2]{rotate} // 0;
+    my $is_portrait = ($rotate == 90 || $rotate == 270) ? 1:0;
+
+    [200, "OK", $is_portrait, {'cmdline.exit_code' => $is_portrait ? 0:1, 'cmdline.result' => ''}];
+}
+
+$SPEC{media_is_landscape} = {
+    v => 1.1,
+    summary => 'Return exit code 0 if media is landscape',
+    description => <<'_',
+
+Portrait is defined as having 'rotate' metadata of 90 or 270. Otherwise, media
+is assumed to be 'landscape'.
+
+_
+    args => {
+        %arg0_media_single,
+        %argopt_backend,
+    },
+};
+sub media_is_landscape {
+    my %args = @_;
+
+    my $res = media_info(media => [$args{media}], backend=>$args{backend});
+    return $res unless $res->[0] == 200;
+
+    my $rotate = $res->[2]{rotate} // 0;
+    my $is_landscape = ($rotate == 90 || $rotate == 270) ? 0:1;
+
+    [200, "OK", $is_landscape, {'cmdline.exit_code' => $is_landscape ? 0:1, 'cmdline.result' => ''}];
+}
+
+$SPEC{media_orientation} = {
+    v => 1.1,
+    summary => "Return orientation of media ('portrait' or 'landscape')",
+    description => <<'_',
+
+Portrait is defined as having 'rotate' metadata of 90 or 270. Otherwise, media
+is assumed to be 'landscape'.
+
+_
+    args => {
+        %arg0_media_single,
+        %argopt_backend,
+    },
+};
+sub media_orientation {
+    my %args = @_;
+
+    my $res = media_info(media => [$args{media}], backend=>$args{backend});
+    return $res unless $res->[0] == 200;
+
+    my $rotate = $res->[2]{rotate} // 0;
+    my $orientation = ($rotate == 90 || $rotate == 270) ? "portrait" : "landscape";
+
+    [200, "OK", $orientation];
 }
 
 1;
