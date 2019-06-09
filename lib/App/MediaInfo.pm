@@ -10,6 +10,11 @@ use warnings;
 
 our %SPEC;
 
+$SPEC{':package'} = {
+    v => 1.1,
+    summary => 'Utilities related to media files',
+};
+
 our %arg0_media_multiple = (
     media => {
         summary => 'Media files/URLs',
