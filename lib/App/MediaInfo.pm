@@ -111,7 +111,12 @@ sub media_is_portrait {
     return [412, "Can't determine video width x height"] unless $width && $height;
     my $is_portrait = ($rotate == 90 || $rotate == 270 ? 1:0) ^ ($width <= $height ? 1:0) ? 1:0;
 
-    [200, "OK", $is_portrait, {'cmdline.exit_code' => $is_portrait ? 0:1, 'cmdline.result' => ''}];
+    [200, "OK", $is_portrait, {
+        'cmdline.exit_code' => $is_portrait ? 0:1,
+        'cmdline.result' => '',
+        'cmdline.result.interactive' => "Media is ".
+            ($is_portrait ? "portrait" : "NOT portrait (landscape)"),
+    }];
 }
 
 $SPEC{media_is_landscape} = {
@@ -140,7 +145,12 @@ sub media_is_landscape {
     return [412, "Can't determine video width x height"] unless $width && $height;
     my $is_landscape = ($rotate == 90 || $rotate == 270 ? 1:0) ^ ($width <= $height ? 1:0) ? 0:1;
 
-    [200, "OK", $is_landscape, {'cmdline.exit_code' => $is_landscape ? 0:1, 'cmdline.result' => ''}];
+    [200, "OK", $is_landscape, {
+        'cmdline.exit_code' => $is_landscape ? 0:1,
+        'cmdline.result' => '',
+        'cmdline.result.interactive' => "Media is ".
+            ($is_landscape ? "landscape" : "NOT landscape (portrait)"),
+    }];
 }
 
 $SPEC{media_orientation} = {
