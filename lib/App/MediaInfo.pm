@@ -53,6 +53,15 @@ our %argopt_backend = (
     },
 );
 
+our %argopt_quiet = (
+    quiet => {
+        summary => "Don't output anything on command-line, ".
+            "just return appropriate exit code",
+        schema => 'true*',
+        cmdline_aliases => {q=>{}, silent=>{}},
+    },
+);
+
 $SPEC{media_info} = {
     v => 1.1,
     summary => 'Get information about media files/URLs',
@@ -102,6 +111,7 @@ _
     args => {
         %arg0_media_single,
         %argopt_backend,
+        %argopt_quiet,
     },
 };
 sub media_is_portrait {
@@ -118,8 +128,8 @@ sub media_is_portrait {
 
     [200, "OK", $is_portrait, {
         'cmdline.exit_code' => $is_portrait ? 0:1,
-        'cmdline.result' => '',
-        'cmdline.result.interactive' => "Media is ".
+        'cmdline.result' => $args{quiet} ? '' :
+            "Media is ".
             ($is_portrait ? "portrait" : "NOT portrait (landscape)"),
     }];
 }
@@ -136,6 +146,7 @@ _
     args => {
         %arg0_media_single,
         %argopt_backend,
+        %argopt_quiet,
     },
 };
 sub media_is_landscape {
@@ -152,8 +163,8 @@ sub media_is_landscape {
 
     [200, "OK", $is_landscape, {
         'cmdline.exit_code' => $is_landscape ? 0:1,
-        'cmdline.result' => '',
-        'cmdline.result.interactive' => "Media is ".
+        'cmdline.result' => $args{quiet} ? '' :
+            "Media is ".
             ($is_landscape ? "landscape" : "NOT landscape (portrait)"),
     }];
 }
