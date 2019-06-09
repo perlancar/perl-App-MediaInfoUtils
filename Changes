@@ -1,3 +1,9 @@
+0.121   2019-06-09 (PERLANCAR)
+
+	- [ux] media-is-{portrait,landscape}: Show human-friendly message
+	  when run interactively.
+
+
 0.120   2019-01-28 (PERLANCAR)
 
 	- Add utilities: media-is-landscape, media-is-portrait,
