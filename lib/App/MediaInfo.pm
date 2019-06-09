@@ -12,7 +12,8 @@ our %SPEC;
 
 $SPEC{':package'} = {
     v => 1.1,
-    summary => 'Utilities related to media files',
+    summary => 'Utilities related to getting (metadata) information from '.
+        'media files',
 };
 
 our %arg0_media_multiple = (
