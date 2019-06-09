@@ -113,6 +113,15 @@ _
         %argopt_backend,
         %argopt_quiet,
     },
+    examples => [
+        {
+            summary => 'Move all portrait videos to portrait/',
+            src => 'for f in *.mp4;do [[prog]] -q "$f" && mv "$f" portrait/; done',
+            src_plang => 'bash',
+            test => 0,
+            'x.doc.show_result' => 0,
+        },
+    ],
 };
 sub media_is_portrait {
     my %args = @_;
@@ -148,6 +157,15 @@ _
         %argopt_backend,
         %argopt_quiet,
     },
+    examples => [
+        {
+            summary => 'Convert all landscape mkv videos to mp4',
+            src => 'for f in *.mkv;do [[prog]] -q "$f" && ffmpeg -i "$f" "$f.mp4"; done',
+            src_plang => 'bash',
+            test => 0,
+            'x.doc.show_result' => 0,
+        },
+    ],
 };
 sub media_is_landscape {
     my %args = @_;
