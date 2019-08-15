@@ -6,7 +6,8 @@ package App::MediaInfo;
 use 5.010001;
 use strict;
 use warnings;
-#use Log::Any '$log';
+
+use Perinci::Exporter;
 
 our %SPEC;
 
