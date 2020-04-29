@@ -1,3 +1,9 @@
+0.125   2020-04-29  Released-By: PERLANCAR; Urgency: medium
+
+	- Tweak Rinci metadata: replace deprecated
+	  x.schema.{,element_}entity with more specific schema.
+
+
 0.124   2019-08-15  Released-By: PERLANCAR; Urgency: medium
 
 	- Use Perinci::Exporter.
