@@ -1,4 +1,4 @@
-package App::MediaInfo;
+package App::MediaInfoUtils;
 
 # AUTHORITY
 # DATE
@@ -119,6 +119,37 @@ sub media_info {
     }
     [200, "OK", \@res];
 }
+
+$SPEC{media_summary_by_type} = {
+    v => 1.1,
+    summary => 'Summarize media by types (from filenames)',
+    args => {
+        %arg0_media_multiple,
+    },
+};
+sub media_summary_by_type {
+    require Media::Info;
+
+    my %args = @_;
+
+    my $media = $args{media};
+
+    my %filesize_by_type;
+    my %filecount_by_type;
+    for my $file (@$media) {
+        my $type = _type_from_name($file);
+        $filesize_by_type{$type} += (-s $media);
+        $filecount_by_type{$type}++;
+    }
+
+    my @rows;
+    for my $type (sort keys %filecount_by_type) {
+        push @rows, {type=>$type, count=>$filecount_by_type{$type}, total_size=>$filesize_by_type{$size}};
+    }
+
+    [200, "OK", \@rows, {'table.fields'=>[qw/type count total_size/]}];
+}
+
 
 $SPEC{media_is_portrait} = {
     v => 1.1,
