@@ -22,23 +22,19 @@ $SPEC{':package'} = {
 our %arg0_media_multiple = (
     media => {
         summary => 'Media files/URLs',
-        schema => ['array*' => of => 'str*'],
+        schema => ['array*' => of => 'filename*'], # XXX filename_or_url
         req => 1,
         pos => 0,
         greedy => 1,
-        #'x.schema.entity' => 'filename_or_url',
-        'x.schema.entity' => 'filename', # temp
     },
 );
 
 our %arg0_media_single = (
     media => {
         summary => 'Media file/URL',
-        schema => ['str*'],
+        schema => ['filename*'], # XXX filename_or_url
         req => 1,
         pos => 0,
-        #'x.schema.entity' => 'filename_or_url',
-        'x.schema.entity' => 'filename', # temp
     },
 );
 
