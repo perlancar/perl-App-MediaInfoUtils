@@ -138,16 +138,20 @@ sub media_summary_by_type {
     my %filecount_by_type;
     for my $file (@$media) {
         my $type = _type_from_name($file);
-        $filesize_by_type{$type} += (-s $media);
+        $filesize_by_type{$type} += (-s $file);
         $filecount_by_type{$type}++;
     }
 
     my @rows;
     for my $type (sort keys %filecount_by_type) {
-        push @rows, {type=>$type, count=>$filecount_by_type{$type}, total_size=>$filesize_by_type{$size}};
+        push @rows, {type=>$type, count=>$filecount_by_type{$type}, total_size=>$filesize_by_type{$type}};
     }
 
-    [200, "OK", \@rows, {'table.fields'=>[qw/type count total_size/]}];
+    [200, "OK", \@rows, {
+        'table.fields'=>[qw/type count total_size/],
+        'table.field_formats'=>[undef, undef, 'filesize'],
+        'table.field_aligns' =>[undef, 'right', 'right'],
+    }];
 }
 
 
