@@ -140,6 +140,19 @@ sub media_summary_by_type {
         my $type = _type_from_name($file);
         $filesize_by_type{$type} += (-s $file);
         $filecount_by_type{$type}++;
+
+        if ($type eq 'audio' || $type eq 'image' || $type eq 'video') {
+            $filesize_by_type{"audio+image+video"} += (-s $file);
+            $filecount_by_type{"audio+image+video"}++;
+        }
+
+        if ($type eq 'image' || $type eq 'video') {
+            $filesize_by_type{"image+video"} += (-s $file);
+            $filecount_by_type{"image+video"}++;
+        }
+
+        $filesize_by_type{"ALL"} += (-s $file);
+        $filecount_by_type{"ALL"}++;
     }
 
     my @rows;
