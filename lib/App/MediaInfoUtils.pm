@@ -8,6 +8,7 @@ package App::MediaInfoUtils;
 use 5.010001;
 use strict;
 use warnings;
+use Log::ger;
 
 use Perinci::Exporter;
 
@@ -78,17 +79,18 @@ sub media_info {
     my $media = $args{media};
 
     my @rows;
-    for (@$media) {
+    for my $m (@$media) {
+        log_info "Getting media info for %s ...", $m;
         my $res = Media::Info::get_media_info(
-            media => $_,
+            media => $m,
             (backend => $args{backend}) x !!(defined $args{backend}),
         );
         unless ($res->[0] == 200) {
-            warn "Can't get media info for '$_': $res->[1] ($res->[0])\n";
+            warn "Can't get media info for '$m': $res->[1] ($res->[0])\n";
             next;
         }
         my $row = {
-            media => $_,
+            media => $m,
             %{$res->[2]},
         };
         push @rows, $row;
@@ -116,7 +118,7 @@ sub media_summary_by_type {
     my %filesize_by_type;
     my %filecount_by_type;
     for my $file (@$media) {
-        my $type = _type_from_name($file);
+        my $type = Media::Info::_type_from_name($file);
         $filesize_by_type{$type} += (-s $file);
         $filecount_by_type{$type}++;
 
