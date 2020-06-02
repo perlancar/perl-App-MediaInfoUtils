@@ -97,7 +97,7 @@ sub media_info {
 
     my $media = $args{media};
 
-    my @res;
+    my @rows;
     for (@$media) {
         my $res = Media::Info::get_media_info(
             media => $_,
@@ -107,17 +107,17 @@ sub media_info {
             warn "Can't get media info for '$_': $res->[1] ($res->[0])\n";
             next;
         }
-        push @res, {
+        push @rows, {
             media => $_,
             %{$res->[2]},
             info_backend => $res->[3]{'func.backend'},
             type_from_name => _type_from_name($_),
         };
         if (@$media == 1) {
-            return [200, "OK", $res->[0]];
+            return [200, "OK", $rows[0]];
         }
     }
-    [200, "OK", \@res];
+    [200, "OK", \@rows];
 }
 
 $SPEC{media_summary_by_type} = {
