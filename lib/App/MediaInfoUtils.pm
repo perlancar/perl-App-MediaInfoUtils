@@ -62,29 +62,9 @@ our %argopt_quiet = (
     },
 );
 
-sub _type_from_name {
-    require Filename::Audio;
-    require Filename::Video;
-    require Filename::Image;
-    my $name = shift;
-
-    Filename::Video::check_video_filename(filename => $name) ? "video" :
-    Filename::Audio::check_audio_filename(filename => $name) ? "audio" :
-    Filename::Image::check_image_filename(filename => $name) ? "image" : "unknown";
-}
-
 $SPEC{media_info} = {
     v => 1.1,
     summary => 'Get information about media files/URLs',
-    description => <<'_',
-
-Many fields will depend on the backend used. Some other fields returned:
-
-* `info_backend`: the `Media::Info::*` backend module used, e.g. `Ffmpeg`.
-* `type_from_name`: either `image`, `audio`, `video`, or `unknown`. This
-  is determined from filename (extension).
-
-_
     args => {
         %arg0_media_multiple,
         %argopt_backend,
@@ -107,14 +87,13 @@ sub media_info {
             warn "Can't get media info for '$_': $res->[1] ($res->[0])\n";
             next;
         }
-        push @rows, {
+        my $row = {
             media => $_,
             %{$res->[2]},
-            info_backend => $res->[3]{'func.backend'},
-            type_from_name => _type_from_name($_),
         };
+        push @rows, $row;
         if (@$media == 1) {
-            return [200, "OK", $rows[0]];
+            return [200, "OK", $row];
         }
     }
     [200, "OK", \@rows];
